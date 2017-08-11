@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Web.Http;
+using Autofac;
 
 namespace AwesomeApp.Test
 {
@@ -9,10 +10,18 @@ namespace AwesomeApp.Test
         HttpConfiguration configuration;
         HttpServer server;
         protected HttpClient client;
+        ContainerBuilder builder;
 
         public ApiTestBase()
         {
-            CreateConfiguration();
+            configuration = new HttpConfiguration();
+            builder = Bootstrapper.Init(configuration);
+        }
+
+        public void Init(Action<ContainerBuilder> build = null)
+        {
+            build?.Invoke(builder);
+            Bootstrapper.Finalize(configuration, builder);
             CreateServer();
             CreateClient();
         }
@@ -28,12 +37,6 @@ namespace AwesomeApp.Test
         void CreateServer()
         {
             server = new HttpServer(configuration);
-        }
-
-        void CreateConfiguration()
-        {
-            configuration = new HttpConfiguration();
-            Bootstrapper.Init(configuration);
         }
 
         public void Dispose()

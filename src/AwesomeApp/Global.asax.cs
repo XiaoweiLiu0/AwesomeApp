@@ -9,7 +9,9 @@ namespace AwesomeApp
         protected void Application_Start(object sender, EventArgs e)
         {
             var configuration = GlobalConfiguration.Configuration;
-            Bootstrapper.Init(configuration);
+
+            var builder = Bootstrapper.Init(configuration);
+            Bootstrapper.Finalize(configuration, builder);
         }
 
     }
