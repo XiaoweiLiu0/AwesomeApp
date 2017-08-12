@@ -5,14 +5,11 @@ namespace AwesomeApp
 {
     public class Global : System.Web.HttpApplication
     {
-
         protected void Application_Start(object sender, EventArgs e)
         {
             var configuration = GlobalConfiguration.Configuration;
 
-            var builder = Bootstrapper.Init(configuration);
-            Bootstrapper.Finalize(configuration, builder);
+            Bootstrapper.Init(configuration);
         }
-
     }
 }

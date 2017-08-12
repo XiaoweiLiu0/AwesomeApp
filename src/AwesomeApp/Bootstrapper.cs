@@ -12,24 +12,30 @@ namespace AwesomeApp
 {
     public class Bootstrapper
     {
-        public static ContainerBuilder Init(HttpConfiguration configuration)
+        public static void Init(HttpConfiguration configuration, Action<ContainerBuilder> build = null)
         {
             RegisterRoutes(configuration);
-            return RegisterModules(configuration);
+            var builder = RegisterModules(configuration, build);
+
+            Finalize(configuration, builder);
         }
 
-        public static ContainerBuilder RegisterModules(HttpConfiguration configuration)
+        public static ContainerBuilder RegisterModules(HttpConfiguration configuration, Action<ContainerBuilder> build = null)
         {
             var builder = new ContainerBuilder();
+
             builder.RegisterType<DependencyService>().InstancePerLifetimeScope();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+
             builder.RegisterType<MyLogger>().As<IMyLogger>().InstancePerLifetimeScope();
             configuration.Filters.Add(new LogFilter());
+
+            build?.Invoke(builder);
 
             return builder;
         }
 
-        public static void Finalize(HttpConfiguration configuration, ContainerBuilder builder)
+        static void Finalize(HttpConfiguration configuration, ContainerBuilder builder)
         {
             var container = builder.Build();
             configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);

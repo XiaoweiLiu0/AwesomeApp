@@ -7,21 +7,18 @@ namespace AwesomeApp.Test
 {
     public class ApiTestBase : IDisposable
     {
-        HttpConfiguration configuration;
+        readonly HttpConfiguration configuration;
         HttpServer server;
         protected HttpClient client;
-        ContainerBuilder builder;
 
         public ApiTestBase()
         {
             configuration = new HttpConfiguration();
-            builder = Bootstrapper.Init(configuration);
         }
 
         public void Init(Action<ContainerBuilder> build = null)
         {
-            build?.Invoke(builder);
-            Bootstrapper.Finalize(configuration, builder);
+            Bootstrapper.Init(configuration, build);
             CreateServer();
             CreateClient();
         }
