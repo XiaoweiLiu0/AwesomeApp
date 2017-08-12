@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using Autofac;
-using AwesomeApp.filters;
 using Xunit;
 
 namespace AwesomeApp.Test

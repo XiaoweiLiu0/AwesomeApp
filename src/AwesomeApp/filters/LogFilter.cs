@@ -8,7 +8,7 @@ namespace AwesomeApp.filters
 {
     class LogFilter : ActionFilterAttribute
     {
-        string startAt = "StartAt";
+        const string startAt = "StartAt";
 
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
@@ -31,7 +31,19 @@ namespace AwesomeApp.filters
 
     public class MyLogger : IMyLogger, IDisposable
     {
-        readonly StreamWriter file = new StreamWriter(@"C:\\awesomeLog\log.txt");
+        const string filePath = @"C:\\AwesomeLog\log.txt";
+        readonly StreamWriter file;
+
+        public MyLogger()
+        {
+            if (!File.Exists(filePath))
+            {
+                File.CreateText(filePath);
+            }
+
+            file = File.AppendText(filePath);
+        }
+
         public void Log(string line)
         {
             file.WriteLine(line);
