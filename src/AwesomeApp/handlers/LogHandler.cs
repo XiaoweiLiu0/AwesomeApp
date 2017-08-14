@@ -7,25 +7,22 @@ namespace AwesomeApp.handlers
 {
     public class LogHandler : DelegatingHandler
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var startTime = DateTime.UtcNow;
+            var logger = (IMyLogger) request.GetDependencyScope().GetService(typeof(IMyLogger));
+            var startAt = DateTime.UtcNow;
+            logger.Log($"{request.RequestUri} start at {startAt}");
 
-            var logger = (IMyLogger)request.GetDependencyScope().GetService(typeof(IMyLogger));
-            logger.Log($"{request.RequestUri} start at {startTime}");
+            return base.SendAsync(request, cancellationToken).ContinueWith(t =>
+            {
+                var endAt = DateTime.UtcNow;
+                logger.Log($"end at {endAt}");
 
-            return base.SendAsync(request, cancellationToken)
-                .ContinueWith(t =>
-                {
-                    var endTime = DateTime.UtcNow;
-                    logger.Log($"{request.RequestUri} end at {endTime}");
+                var perf = Convert.ToInt64((endAt - startAt).TotalMilliseconds);
+                logger.Log($"performance: {perf}");
 
-                    var perf = Convert.ToInt64((endTime - startTime).TotalMilliseconds);
-                    logger.Log($"{request.RequestUri} perf is {perf}");
-
-                    return t.Result;
-                }, cancellationToken);
+                return t.Result;
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
     }
 }
