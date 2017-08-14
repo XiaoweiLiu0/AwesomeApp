@@ -6,6 +6,7 @@ using System.Web.Http.Routing;
 using Autofac;
 using Autofac.Integration.WebApi;
 using AwesomeApp.filters;
+using AwesomeApp.handlers;
 using AwesomeApp.service;
 
 namespace AwesomeApp
@@ -28,7 +29,8 @@ namespace AwesomeApp
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             builder.RegisterType<MyLogger>().As<IMyLogger>().InstancePerLifetimeScope();
-            configuration.Filters.Add(new LogFilter());
+//            configuration.Filters.Add(new LogFilter());
+            configuration.MessageHandlers.Add(new LogHandler());
 
             build?.Invoke(builder);
 
